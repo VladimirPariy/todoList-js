@@ -1,65 +1,76 @@
-// const buttonAdd = document.querySelector('.todo-menu__add');
-// const buttonRemove = document.querySelector('.todo-menu__remove');
-// let todoContainer = document.querySelector('.todo-container');
+const todoButtonAdd = document.querySelector('.todo-add-new-item__btn');
+const todoInput = document.querySelector('.todo-add-new-item__input');
+let todoContainer = document.querySelector('.todo-container');
+let allTasks;
+let allDivs = [];
 
 
-// buttonAdd.addEventListener('click', () => {
-//     let elem = document.createElement('li')
-//     elem.classList.add('todo-item')
-//     document.querySelector('.todo-container').appendChild(elem)
-//     elem.appendChild(input)
-// });
-
-// buttonRemove.addEventListener('click', () => {
-//     if (todoContainer.childElementCount > 0) {
-//         let removeNode = document.querySelectorAll('.todo-item')
-//         todoContainer.removeChild(removeNode[removeNode.length - 1])
-//     }
-// });
-
-// todoContainer.addEventListener('click',  (event) => {
-//     if (event.target.tagName === 'LI') {
-//         event.target.classList.toggle('todo-item__done');
-//     }
-// });
-
-
-const todoButtonAdd = document.querySelector('.todo-add-new-item__btn')
-const todoInput = document.querySelector('.todo-add-new-item__input')
+function CreateTask(task) {
+    this.task = task;
+    this.doneTask = false;
+}
 
 todoButtonAdd.addEventListener('click', () => {
+    allTasks.push(new CreateTask(todoInput.value));
+    updateLocalStorage();
     createElem()
-    addInputTextToElem()
-    clearInput()
+    todoInput.value = ''
 })
 
+function updateLocalStorage() {
+    localStorage.setItem('tasks', JSON.stringify(allTasks));
+}
+
+if (!localStorage.allTasks) {
+    allTasks = JSON.parse(localStorage.getItem('tasks'));
+} else {
+    allTasks = [];
+}
+
 function createElem() {
-    if (todoInput.value.length > 0) {
-        let createFullElem = document.createElement('div')
-        createFullElem.classList.add('todo-item')
-        document.querySelector('.todo-container').appendChild(createFullElem)
-
-        let parentNode = document.querySelectorAll('.todo-item')
-
-        let createElemWithAdd = document.createElement('div')
-        createElemWithAdd.classList.add('todo-item__add')
-        parentNode[parentNode.length - 1].appendChild(createElemWithAdd)
-
-        let createElemWithText = document.createElement('div')
-        createElemWithText.classList.add('todo-item__text')
-        parentNode[parentNode.length - 1].appendChild(createElemWithText)
-
-        let createElemWithRemove = document.createElement('div')
-        createElemWithRemove.classList.add('todo-item__remove')
-        parentNode[parentNode.length - 1].appendChild(createElemWithRemove)
+    todoContainer.innerHTML = ''
+    if (allTasks.length > 0) {
+        filteredDoneTasks()
+        allTasks.forEach((element, index) => {
+            todoContainer.innerHTML += createTask(element, index)
+        });
+        allDivs = document.querySelectorAll('.todo-item')
     }
 }
 
-function addInputTextToElem() {
-    let allTodoItem = document.querySelectorAll('.todo-item')
-    allTodoItem[allTodoItem.length - 1].children[1].innerHTML = todoInput.value
+createElem()
+
+function createTask(element, index) {
+    return `<div class="todo-item ${element.doneTask ? 'checked' : ''}" >
+                <input onclick="doneTask(${index})" type="checkbox" class="todo-item__done" ${element.doneTask ? 'checked' : ''}>
+                <div class="todo-item__text">${element.task}</div>
+                <button onclick="removeTask(${index})" class="todo-item__remove"></button>
+            </div>
+    `
 }
 
-function clearInput() {
-    todoInput.value = ''
+function doneTask(index) {
+    allTasks[index].doneTask = !allTasks[index].doneTask
+    if (allTasks[index].doneTask) {
+        allDivs[index].classList.add('checked')
+    } else {
+        allDivs[index].classList.remove('checked')
+    }
+    updateLocalStorage()
+    createElem()
+}
+
+function removeTask(index) {
+    allDivs[index].classList.add('deleted')
+    setTimeout(() => {
+        allTasks.splice(index, 1)
+        updateLocalStorage()
+        createElem()
+    }, 500)
+}
+
+function filteredDoneTasks() {
+    const active = allTasks.length && allTasks.filter(item => item.doneTask === false)
+    const done = allTasks.length && allTasks.filter(item => item.doneTask === true)
+    allTasks = [...active, ...done];
 }
