@@ -1,18 +1,23 @@
-const todoButtonAdd = document.querySelector('.todo-add-new-item__btn');
-const todoInput = document.querySelector('.todo-add-new-item__input');
+let todoButtonAdd = document.querySelector('.todo-add-new-item__btn');
+let todoInput = document.querySelector('.todo-add-new-item__input');
 let todoContainer = document.querySelector('.todo-container');
-let allTasks;
+let allTasks = [];
 let allDivs = [];
 
+if (!localStorage.tasks) {
+    allTasks = []
+} else {
+    allTasks = JSON.parse(localStorage.getItem('tasks'))
+}
 
 function CreateTask(task) {
-    this.task = task;
-    this.doneTask = false;
+    this.task = task
+    this.doneTask = false
 }
 
 todoButtonAdd.addEventListener('click', () => {
-    allTasks.push(new CreateTask(todoInput.value));
-    updateLocalStorage();
+    allTasks.push(new CreateTask(todoInput.value))
+    updateLocalStorage()
     createElem()
     todoInput.value = ''
 })
@@ -21,19 +26,14 @@ function updateLocalStorage() {
     localStorage.setItem('tasks', JSON.stringify(allTasks));
 }
 
-if (!localStorage.allTasks) {
-    allTasks = JSON.parse(localStorage.getItem('tasks'));
-} else {
-    allTasks = [];
-}
-
 function createElem() {
     todoContainer.innerHTML = ''
+    console.log(allTasks)
     if (allTasks.length > 0) {
         filteredDoneTasks()
         allTasks.forEach((element, index) => {
             todoContainer.innerHTML += createTask(element, index)
-        });
+        })
         allDivs = document.querySelectorAll('.todo-item')
     }
 }
@@ -61,12 +61,12 @@ function doneTask(index) {
 }
 
 function removeTask(index) {
-    allDivs[index].classList.add('deleted')
+
     setTimeout(() => {
         allTasks.splice(index, 1)
         updateLocalStorage()
         createElem()
-    }, 500)
+    }, 100)
 }
 
 function filteredDoneTasks() {
