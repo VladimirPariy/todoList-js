@@ -1,0 +1,71 @@
+.sidebar__button {
+  border: none;
+  position: fixed;
+  top: 25px;
+  right: 23px;
+  height: 35px;
+  width: 35px;
+  background-color: #1b63ce;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+.sidebar__button::after {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 2px;
+  background: #fff;
+  transform: translateY(-5px);
+  transition: 0.5s;
+}
+.sidebar__button::before {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 2px;
+  background: #fff;
+  transform: translateY(5px);
+  transition: 0.5s;
+}
+
+.sidebar__button.active::after {
+  transform: rotate(45deg);
+}
+
+.sidebar__button.active::before {
+  transform: rotate(-45deg);
+}
+
+.sidebar {
+  background: #133949;
+  height: 100vh;
+  width: 100vw;
+  position: fixed;
+  top: 0;
+  left: -100vw;
+  transition: 0.5s;
+}
+.sidebar.active {
+  left: 0px;
+}
+
+.sidebar__list {
+  position: relative;
+  margin-top: 50px;
+}
+.sidebar__item {
+  padding: 20px;
+  min-width: 315px;
+}
+
+.sidebar__list .todo-item .todo-item__remove {
+  background-color: #133949;
+}
+
+.sidebar-container {
+  max-width: 500px;
+  margin: 0 auto;
+}

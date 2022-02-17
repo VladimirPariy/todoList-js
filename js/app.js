@@ -1,76 +1,84 @@
-let todoButtonAdd = document.querySelector('.todo-add-new-item__btn');
-let todoInput = document.querySelector('.todo-add-new-item__input');
-let todoContainer = document.querySelector('.todo-container');
-let allTasks = [];
-let allDivs = [];
+const todoButtonAdd = document.querySelector('.todo-add-new-item__btn');
+const todoInput = document.querySelector('.todo-add-new-item__input');
+const todoContainer = document.querySelector('.todo-container');
+const todoDoneContainer = document.querySelector('.sidebar__list');
+
+let allTasksArray = [];
+let allDivsWithTasks = [];
+
 
 if (!localStorage.tasks) {
-    allTasks = []
+    allTasksArray = []
 } else {
-    allTasks = JSON.parse(localStorage.getItem('tasks'))
+    allTasksArray = JSON.parse(localStorage.getItem('tasks'))
 }
 
-function CreateTask(task) {
+function CreateTaskConstructor(task) {
     this.task = task
     this.doneTask = false
 }
 
 todoButtonAdd.addEventListener('click', () => {
-    allTasks.push(new CreateTask(todoInput.value))
-    updateLocalStorage()
-    createElem()
+    allTasksArray.push(new CreateTaskConstructor(todoInput.value))
+    createElemAndUpdateLocalStorage()
     todoInput.value = ''
 })
 
 function updateLocalStorage() {
-    localStorage.setItem('tasks', JSON.stringify(allTasks));
+    localStorage.setItem('tasks', JSON.stringify(allTasksArray));
 }
 
 function createElem() {
     todoContainer.innerHTML = ''
-    console.log(allTasks)
-    if (allTasks.length > 0) {
+    todoDoneContainer.innerHTML = ''
+    if (allTasksArray.length > 0) {
         filteredDoneTasks()
-        allTasks.forEach((element, index) => {
-            todoContainer.innerHTML += createTask(element, index)
+        allTasksArray.forEach((element, index) => {
+            if (element.doneTask === false) {
+                todoContainer.innerHTML += createTaskInHTML(element, index)
+            }
+            if (element.doneTask === true) {
+                todoDoneContainer.innerHTML += createTaskInHTML(element, index)
+            }
         })
-        allDivs = document.querySelectorAll('.todo-item')
+        allDivsWithTasks = document.querySelectorAll('.todo-item')
     }
+}
+
+function createElemAndUpdateLocalStorage() {
+    updateLocalStorage()
+    createElem()
 }
 
 createElem()
 
-function createTask(element, index) {
+function createTaskInHTML(element, index) {
     return `<div class="todo-item ${element.doneTask ? 'checked' : ''}" >
                 <input onclick="doneTask(${index})" type="checkbox" class="todo-item__done" ${element.doneTask ? 'checked' : ''}>
                 <div class="todo-item__text">${element.task}</div>
-                <button onclick="removeTask(${index})" class="todo-item__remove"></button>
+                <button onclick="removeTask(${index})" class="todo-item__remove"><?xml version="1.0" ?><svg id="false-cross-reject-decline" style="enable-background:new 0 0 15 15;" version="1.1" viewBox="0 0 15 15" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M7.5,0C3.364,0,0,3.364,0,7.5S3.364,15,7.5,15S15,11.636,15,7.5S11.636,0,7.5,0z M7.5,14C3.916,14,1,11.084,1,7.5  S3.916,1,7.5,1S14,3.916,14,7.5S11.084,14,7.5,14z"/><polygon points="10.146,4.146 7.5,6.793 4.854,4.146 4.146,4.854 6.793,7.5 4.146,10.146 4.854,10.854 7.5,8.207 10.146,10.854   10.854,10.146 8.207,7.5 10.854,4.854 "/></svg></button>
             </div>
     `
 }
 
 function doneTask(index) {
-    allTasks[index].doneTask = !allTasks[index].doneTask
-    if (allTasks[index].doneTask) {
-        allDivs[index].classList.add('checked')
+    allTasksArray[index].doneTask = !allTasksArray[index].doneTask
+    if (allTasksArray[index].doneTask) {
+        allDivsWithTasks[index].classList.add('checked')
     } else {
-        allDivs[index].classList.remove('checked')
+        allDivsWithTasks[index].classList.remove('checked')
     }
-    updateLocalStorage()
-    createElem()
+    createElemAndUpdateLocalStorage()
 }
 
 function removeTask(index) {
-
-    setTimeout(() => {
-        allTasks.splice(index, 1)
-        updateLocalStorage()
-        createElem()
-    }, 100)
+    allTasksArray.splice(index, 1)
+    createElemAndUpdateLocalStorage()
 }
 
 function filteredDoneTasks() {
-    const active = allTasks.length && allTasks.filter(item => item.doneTask === false)
-    const done = allTasks.length && allTasks.filter(item => item.doneTask === true)
-    allTasks = [...active, ...done];
+    const activeTasks = allTasksArray.length && allTasksArray.filter(item => item.doneTask === false)
+    const done = allTasksArray.length && allTasksArray.filter(item => item.doneTask === true)
+    allTasksArray = [...activeTasks, ...done];
 }
+
