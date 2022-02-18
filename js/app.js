@@ -32,7 +32,6 @@ function createElem() {
     todoContainer.innerHTML = ''
     todoDoneContainer.innerHTML = ''
     if (allTasksArray.length > 0) {
-        filteredDoneTasks()
         allTasksArray.forEach((element, index) => {
             if (element.doneTask === false) {
                 todoContainer.innerHTML += createTaskInHTML(element, index)
@@ -76,9 +75,5 @@ function removeTask(index) {
     createElemAndUpdateLocalStorage()
 }
 
-function filteredDoneTasks() {
-    const activeTasks = allTasksArray.length && allTasksArray.filter(item => item.doneTask === false)
-    const done = allTasksArray.length && allTasksArray.filter(item => item.doneTask === true)
-    allTasksArray = [...activeTasks, ...done];
-}
+
 
